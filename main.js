@@ -56,28 +56,28 @@ async function main() {
 
       // HHMMSS
       timeStr = `${hours}${minutes}${seconds}`;
-    }
 
-    // Set each LED to the correct digit
-    timeStr.split('').forEach((digit, segment) => {
-      // Get the first LED in this segment
-      // ((POSITION - 1) * 7) + 1
-      // but `segment` is 0-indexed, so skip the `- 1`
-      let i = segment * 7 + 1;
-      // Loop over each LED in the segment, turning on or off
-      digitMap[digit].forEach((ledValue) => {
-        root.querySelector(`[data-led="${i}"]`).style.fill = ledValue
-          ? '#ddd'
-          : '#001010';
-        i++;
+      // Set each LED to the correct digit
+      timeStr.split('').forEach((digit, segment) => {
+        // Get the first LED in this segment
+        // ((POSITION - 1) * 7) + 1
+        // but `segment` is 0-indexed, so skip the `- 1`
+        let i = segment * 7 + 1;
+        // Loop over each LED in the segment, turning on or off
+        digitMap[digit].forEach((ledValue) => {
+          root.querySelector(`[data-led="${i}"]`).style.fill = ledValue
+            ? '#ddd'
+            : '#001010';
+          i++;
+        });
       });
-    });
 
-    // Set colons
-    root.querySelector(`[data-led="43"]`).style.fill = '#ddd';
-    root.querySelector(`[data-led="44"]`).style.fill = '#ddd';
-    root.querySelector(`[data-led="45"]`).style.fill = '#ddd';
-    root.querySelector(`[data-led="46"]`).style.fill = '#ddd';
+      // Set colons
+      root.querySelector(`[data-led="43"]`).style.fill = '#ddd';
+      root.querySelector(`[data-led="44"]`).style.fill = '#ddd';
+      root.querySelector(`[data-led="45"]`).style.fill = '#ddd';
+      root.querySelector(`[data-led="46"]`).style.fill = '#ddd';
+    }
 
     // Don't be greedy, give back 1 millisecond of CPU time
     await new Promise((resolve) => setTimeout(resolve, 1));
