@@ -100,10 +100,24 @@ Y  0  1  2  3  4       | X
   [0, 41, 0, 42, 0], //  26
 ];
 
+// Sine wave info - https://krazydad.com/tutorials/makecolors.php
+
+// Wave height
+const center = 128;
+const width = 127;
+
+// Sign waves
+// Each wave is 120 degrees out of phase
+const waves = [
+  0, //                 Red
+  2 * (Math.PI / 3), // Green
+  4 * (Math.PI / 3), // Blue
+];
+
 // Color shift amounts
-const shiftVertical = 0.3;
+// How much to shift the color for each column/row
 const shiftHorizontal = 0.25;
-const rgbOffsets = [0, 2 * (Math.PI / 3), 4 * (Math.PI / 3)];
+const shiftVertical = 0.3;
 
 // Get the color of a pixel
 function getPixelColor(col, row) {
@@ -112,15 +126,26 @@ function getPixelColor(col, row) {
 
   let bytes = [];
 
+  // Red, green, blue
   for (let i = 0; i < 3; i++) {
-    bytes[i] =
-      Math.sin(
-        rgbOffsets[i] + verticalFrequency + horizontalFrequency,
-      ) *
-        127 +
-      128;
+    // Get the base offset of the wave for this color
+    const wave = waves[i];
+
+    // Plot the point in the wave
+    const point = Math.sin(
+      wave + verticalFrequency + horizontalFrequency,
+    );
+
+    // Artificially adjusting the wave height
+    // essentially converting the point to a value between 0 and 255
+    // 1 byte is 8 bits, so 256 possible values (so 0-255)
+    const value = point * width + center;
+
+    // Add the value to the byte array
+    bytes[i] = value;
   }
 
+  // Convert the byte array to a color code
   return `rgb(${bytes.join(',')})`;
 }
 
@@ -174,14 +199,14 @@ async function main() {
     }
 
     // Animation loop
-    xloop: for (x = 0; x <= 26; x++) {
-      yloop: for (y = 0; y <= 4; y++) {
+    for (x = 0; x <= 26; x++) {
+      y_loop: for (y = 0; y <= 4; y++) {
         const led = matrixMap[x][y];
         const isOn = onOffArray[led];
 
         const el = root.querySelector(`[data-led="${led}"]`);
 
-        if (!el) continue yloop;
+        if (!el) continue y_loop;
 
         if (isOn) {
           el.style.fill = getPixelColor(x, y);
