@@ -119,10 +119,22 @@ const waves = [
 const shiftHorizontal = 0.25;
 const shiftVertical = 0.3;
 
+/*
+-----------------
+Part 3: Animation
+-----------------
+
+All we need to do is account for time in the animation loop!
+*/
+
+// How much to shift the color based on the time
+const shiftTime = 3;
+
 // Get the color of a pixel
-function getPixelColor(col, row) {
+function getPixelColor(col, row, millis) {
   const verticalFrequency = shiftVertical * row;
   const horizontalFrequency = shiftHorizontal * col;
+  const timeFrequency = shiftTime * (millis / 1000);
 
   let bytes = [];
 
@@ -133,7 +145,7 @@ function getPixelColor(col, row) {
 
     // Plot the point in the wave
     const point = Math.sin(
-      wave + verticalFrequency + horizontalFrequency,
+      wave + verticalFrequency + horizontalFrequency + timeFrequency,
     );
 
     // Artificially adjusting the wave height
@@ -169,8 +181,10 @@ async function main() {
 
   // Main loop
   while (true) {
+    const millis = Date.now();
+
     // Update the time if one second has passed since the last update
-    if (Date.now() - lastTimeCheck > 1000) {
+    if (millis - lastTimeCheck > 1000) {
       lastTimeCheck = Date.now();
       // Get hours, minutes, and seconds in two digit 12 hour format
       const now = new Date();
@@ -209,7 +223,7 @@ async function main() {
         if (!el) continue y_loop;
 
         if (isOn) {
-          el.style.fill = getPixelColor(x, y);
+          el.style.fill = getPixelColor(x, y, millis);
         } else {
           el.style.fill = '#001010';
         }
