@@ -37,7 +37,8 @@
         {
             "src": "/android-chrome-256x256.png",
             "sizes": "256x256",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
             "src": "/android-chrome-384x384.png",
