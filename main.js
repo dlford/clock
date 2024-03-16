@@ -128,13 +128,13 @@ All we need to do is account for time in the animation loop!
 */
 
 // How much to shift the color based on the time
-const shiftTime = 3;
+const shiftTime = 0.0025;
 
 // Get the color of a pixel
 function getPixelColor(col, row, millis) {
   const verticalFrequency = shiftVertical * row;
   const horizontalFrequency = shiftHorizontal * col;
-  const timeFrequency = shiftTime * (millis / 1000);
+  const timeFrequency = shiftTime * millis;
 
   let bytes = [];
 

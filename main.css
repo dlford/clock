@@ -20,8 +20,5 @@ body {
 
 .clock-svg {
   width: 100%;
-}
-
-.led {
-  transition: fill 200ms ease-in-out;
+  max-width: 1024px;
 }
