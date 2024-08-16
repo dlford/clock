@@ -179,12 +179,15 @@ async function main() {
   onOffArray[45] = 1;
   onOffArray[46] = 1;
 
-  // Main loop
-  while (true) {
+  // Calculate and render one frame
+  function animateFrame() {
     const millis = Date.now();
 
-    // Update the time if one second has passed since the last update
-    if (millis - lastTimeCheck > 1000) {
+    // Update the time if one second has passed since the last update or the seconds are 0
+    if (
+      new Date(millis).getSeconds() > 1 ||
+      millis - lastTimeCheck > 1000
+    ) {
       lastTimeCheck = Date.now();
       // Get hours, minutes, and seconds in two digit 12 hour format
       const now = new Date();
@@ -230,9 +233,12 @@ async function main() {
       }
     }
 
-    // Don't be greedy, give back 1 millisecond of CPU time
-    await new Promise((resolve) => setTimeout(resolve, 1));
+    // Request the next frame
+    requestAnimationFrame(animateFrame);
   }
+
+  // Request the first frame
+  requestAnimationFrame(animateFrame);
 }
 
 // Start after document is ready
