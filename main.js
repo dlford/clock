@@ -106,7 +106,7 @@ Y  0  1  2  3  4       | X
 const center = 128;
 const width = 127;
 
-// Sign waves
+// Sine waves
 // Each wave is 120 degrees out of phase
 const waves = [
   0, //                 Red
@@ -131,10 +131,10 @@ All we need to do is account for time in the animation loop!
 const shiftTime = 0.0025;
 
 // Get the color of a pixel
-function getPixelColor(col, row, millis) {
+function getPixelColor(col, row, now) {
   const verticalFrequency = shiftVertical * row;
   const horizontalFrequency = shiftHorizontal * col;
-  const timeFrequency = shiftTime * millis;
+  const timeFrequency = shiftTime * now;
 
   let bytes = [];
 
@@ -170,6 +170,9 @@ async function main() {
   let lastTimeCheck = 0;
   let timeStr = '';
 
+  // The closest we've been to an exact millisecond
+  let bestMillis = 9999;
+
   // Track the on/off state of each LED
   // 1 = on, 0 = off
   const onOffArray = [];
@@ -181,14 +184,15 @@ async function main() {
 
   // Calculate and render one frame
   function animateFrame() {
-    const millis = Date.now();
+    const now = Date.now();
+    const millis = new Date(now).getMilliseconds();
 
-    // Update the time if one second has passed since the last update or the seconds are 0
-    if (
-      new Date(millis).getSeconds() > 1 ||
-      millis - lastTimeCheck > 1000
-    ) {
+    // Update the time if one second has passed since the last update
+    // or if we've beat our best millisecond
+    if (millis < bestMillis || Date.now() - lastTimeCheck >= 1000) {
+      if (millis < bestMillis) bestMillis = millis;
       lastTimeCheck = Date.now();
+
       // Get hours, minutes, and seconds in two digit 12 hour format
       const now = new Date();
       const hours = (
@@ -226,7 +230,7 @@ async function main() {
         if (!el) continue y_loop;
 
         if (isOn) {
-          el.style.fill = getPixelColor(x, y, millis);
+          el.style.fill = getPixelColor(x, y, now);
         } else {
           el.style.fill = '#001010';
         }
