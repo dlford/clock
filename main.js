@@ -106,7 +106,7 @@ Y  0  1  2  3  4       | X
 const center = 128;
 const width = 127;
 
-// Sign waves
+// Sine waves
 // Each wave is 120 degrees out of phase
 const waves = [
   0, //                 Red
@@ -158,6 +158,9 @@ async function main() {
   let lastTimeCheck = 0;
   let timeStr = '';
 
+  // The closest we've been to an exact millisecond
+  let bestMillis = 9999;
+
   // Track the on/off state of each LED
   // 1 = on, 0 = off
   const onOffArray = [];
@@ -167,11 +170,20 @@ async function main() {
   onOffArray[45] = 1;
   onOffArray[46] = 1;
 
-  // Main loop
-  while (true) {
+  // Calculate and render one frame
+  function animateFrame() {
+    const now = Date.now();
+    const millis = new Date(now).getMilliseconds();
+
     // Update the time if one second has passed since the last update
-    if (Date.now() - lastTimeCheck > 1000) {
+    // or if we've beat our best millisecond
+    if (
+      millis < bestMillis ||
+      Date.now() - lastTimeCheck >= 1000
+    ) {
+      if (millis < bestMillis) bestMillis = millis;
       lastTimeCheck = Date.now();
+
       // Get hours, minutes, and seconds in two digit 12 hour format
       const now = new Date();
       const hours = (
@@ -215,10 +227,12 @@ async function main() {
         }
       }
     }
-
-    // Don't be greedy, give back 1 millisecond of CPU time
-    await new Promise((resolve) => setTimeout(resolve, 1));
+    // Request the next frame
+    requestAnimationFrame(animateFrame);
   }
+
+  // Request the first frame
+  requestAnimationFrame(animateFrame);
 }
 
 // Start after document is ready
